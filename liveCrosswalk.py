@@ -13,6 +13,7 @@ from sklearn import linear_model, datasets
 IMAGE_HEIGHT = 720
 IMAGE_WIDTH = 960
 
+
 def warpImage(img):
     dst_size = (960, 720)
     src = np.float32([(200, 300), (760, 300), (0, 720), (960, 720)])
@@ -56,6 +57,7 @@ def angle(pt1, pt2):
 
 
 # vanishing point - cramer's rule
+# noinspection PyShadowingNames
 def lineIntersect(m1, b1, m2, b2):
     # a1*x+b1*y=c1
     # a2*x+b2*y=c2
@@ -78,6 +80,7 @@ def lineIntersect(m1, b1, m2, b2):
 
 
 # process a frame
+# noinspection PyShadowingNames,PySimplifyBooleanCheck
 def process(im):
     start = timeit.timeit()  # start timer
 
@@ -134,15 +137,15 @@ def process(im):
         cv2.imshow("rect", cv2.rectangle(mask, (bx, by), (bx + bw, by + bh), (0, 255, 0), 3))
 
         if (bw > bw_width):
-            cv2.line(im, (bx, by+bh), (bx + bw, by+bh), (0, 255, 0), 2)  # draw the a contour line
+            cv2.line(im, (bx, by + bh), (bx + bw, by + bh), (0, 255, 0), 2)  # draw the a contour line
             bxRight.append(bx + bw)  # right line
-            byRight.append(by+bh)  # right line
+            byRight.append(by + bh)  # right line
             bxLeft.append(bx)  # left line
-            byLeft.append(by+bh)  # left line
-            bxbyLeftArray.append([bx, by+bh])  # x,y for the left line
-            bxbyRightArray.append([bx + bw, by+bh])  # x,y for the left line
-            cv2.circle(im, (int(bx), int(by+bh)), 5, (0, 250, 250), 2)  # circles -> left line
-            cv2.circle(im, (int(bx + bw), int(by+bh)), 5, (250, 250, 0), 2)  # circles -> right line
+            byLeft.append(by + bh)  # left line
+            bxbyLeftArray.append([bx, by + bh])  # x,y for the left line
+            bxbyRightArray.append([bx + bw, by + bh])  # x,y for the left line
+            cv2.circle(im, (int(bx), int(by + bh)), 5, (0, 250, 250), 2)  # circles -> left line
+            cv2.circle(im, (int(bx + bw), int(by + bh)), 5, (250, 250, 0), 2)  # circles -> right line
 
     # calculate median average for each line
     medianR = np.median(bxbyRightArray, axis=0)
@@ -229,6 +232,7 @@ def process(im):
     print('DELTA (x,y from POV):' + str(Dx) + ',' + str(Dy))
     return im, Dx, Dy
 
+
 # initialization
 # cap = cv2.VideoCapture('inputVideo.mp4')  # load a video
 videoName = 'crosswalk'
@@ -294,8 +298,7 @@ while (cap.isOpened()):
         if (DyAve > 30) and (abs(DxAve) < 300):
             # check if the vanishing point and the next vanishing point aren't too far from each other
             if ((DxAve - Dxold) ** 2 + (DyAve - Dyold) ** 2) < 150 ** 2:  # distance 150 px max
-                cv2.line(img, (int(W / 2), int(H / 2)), (int(W / 2) + int(DxAve), int(H / 2) + int(DyAve)), (0, 0, 255),
-                         7)
+                cv2.line(img, (int(W / 2), int(H / 2)), (int(W / 2) + int(DxAve), int(H / 2) + int(DyAve)), (0, 0, 255), 7)
 
                 # walking directions
                 if abs(DxAve) < 80 and DyAve > 100 and abs(Dxold - DxAve) < 20:

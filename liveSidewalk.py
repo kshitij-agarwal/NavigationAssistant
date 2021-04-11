@@ -5,6 +5,7 @@ import numpy as np
 
 sys.path.append("..")
 from learningModels import vgg
+
 sys.path.remove("..")
 
 
@@ -29,10 +30,10 @@ def warpImage(img):
 
 def get_lined_image(img, lines, color):
     for i in range(2):
-        a = np.cos(lines[1 + (i*2)])
-        b = np.sin(lines[1 + (i*2)])
-        x0 = a * lines[i*2]
-        y0 = b * lines[i*2]
+        a = np.cos(lines[1 + (i * 2)])
+        b = np.sin(lines[1 + (i * 2)])
+        x0 = a * lines[i * 2]
+        y0 = b * lines[i * 2]
 
         x1 = int(x0 + 1000 * (-b))
         y1 = int(y0 + 1000 * a)
@@ -51,7 +52,7 @@ def reverse_transform(lines):
     else:
         lines[0] *= 760
 
-    if lines[3] > np.pi/2:
+    if lines[3] > np.pi / 2:
         lines[2] *= -760
     else:
         lines[2] *= 760

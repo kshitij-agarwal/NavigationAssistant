@@ -7,9 +7,10 @@ import csv
 import time
 from skimage.feature import hog
 from skimage import exposure
+from learningModels import svm
 
 sys.path.append("..")
-from learningModels import svm
+
 sys.path.remove("..")
 
 IMAGE_HEIGHT = 720
@@ -90,8 +91,8 @@ def candidate_extraction(img):
         bx, by, bw, bh = cv2.boundingRect(i)
 
         nl = bh + 10
-        nx = max_num(min_zero(int(bx + (bw / 2) - (bh / 2)) - 5), 959-nl)
-        ny = max_num(min_zero(by - 5), 719-nl)
+        nx = max_num(min_zero(int(bx + (bw / 2) - (bh / 2)) - 5), 959 - nl)
+        ny = max_num(min_zero(by - 5), 719 - nl)
 
         # if check_size(bw, bh) or check_fill(combined_mask, bx, by, bw, bh) or check_aspect(bw, bh):
         #     print(check_size(bw, bh), " ", check_fill(combined_mask, bx, by, bw, bh), " ", check_aspect(bw, bh))
@@ -128,7 +129,6 @@ def candidate_selection(img, candidates, svm_model):
         r[:, :, 0] = 0
         r[:, :, 1] = 0
 
-
         red_histogram_feature, red_img = hog(r, orientations=8, pixels_per_cell=(5, 5), cells_per_block=(2, 2),
                                              block_norm='L2', visualize=True)
         blue_histogram_feature, blue_img = hog(b, orientations=8, pixels_per_cell=(5, 5), cells_per_block=(2, 2),
@@ -136,13 +136,14 @@ def candidate_selection(img, candidates, svm_model):
         _, red_img2 = hog(cv2.resize(r, (40, 40), interpolation=cv2.INTER_AREA),
                           orientations=9, pixels_per_cell=(4, 4), cells_per_block=(2, 2),
                           block_norm='L1', visualize=True)
-        _, blue_img2 = hog(cv2.resize(b, (40, 40), interpolation=cv2.INTER_AREA), orientations=9, pixels_per_cell=(4, 4), cells_per_block=(2, 2),
-                                               block_norm='L1', visualize=True)
+        _, blue_img2 = hog(cv2.resize(b, (40, 40), interpolation=cv2.INTER_AREA), orientations=9,
+                           pixels_per_cell=(4, 4), cells_per_block=(2, 2),
+                           block_norm='L1', visualize=True)
 
         hogs.append(np.hstack((exposure.rescale_intensity(red_img2, out_range=(0, 255)),
                                exposure.rescale_intensity(blue_img2, out_range=(0, 255)))))
         hogs2.append(np.hstack((exposure.rescale_intensity(red_img, out_range=(0, 255)),
-                               exposure.rescale_intensity(blue_img, out_range=(0, 255)))))
+                                exposure.rescale_intensity(blue_img, out_range=(0, 255)))))
         features.append(np.concatenate((red_histogram_feature, blue_histogram_feature), axis=None))
 
     hog_features = np.array(features, np.float32)

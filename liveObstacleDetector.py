@@ -7,7 +7,6 @@ import time
 import cv2
 import os
 
-
 CONFIDENCE = 0.3
 LABELS = open(os.path.abspath("data/coco.names")).read().strip().split("\n")
 
@@ -16,8 +15,9 @@ def getDist(px, co):
     # return ((px*(-.15)) + co)/100  # m
     return ((px * (-3.7)) + co) / 100  # m
 
+
 def getVel(d1, d2):
-    return (d2-d1)/.2  # m/s
+    return (d2 - d1) / .2  # m/s
 
 
 def getCars(_labels, _boxes):
@@ -147,9 +147,9 @@ while True:
 
             cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
             if LABELS[classIDs[i]] == "car":
-               text = "{}: {:.4f}, {:.4f}m, {:.4f}m/s".format(LABELS[classIDs[i]], confidences[i], dist, vel)
+                text = "{}: {:.4f}, {:.4f}m, {:.4f}m/s".format(LABELS[classIDs[i]], confidences[i], dist, vel)
             elif LABELS[classIDs[i]] == "person":
-               text = "{}: {:.4f}, {:.4f}m".format(LABELS[classIDs[i]], confidences[i], dist)
+                text = "{}: {:.4f}, {:.4f}m".format(LABELS[classIDs[i]], confidences[i], dist)
             else:
                 text = "{}: {:.4f}".format(LABELS[classIDs[i]], confidences[i])
 

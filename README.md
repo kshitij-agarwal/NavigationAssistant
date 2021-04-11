@@ -10,6 +10,6 @@ To try crosswalk, sidewalk, pedestrian traffic light, or obstacle detection, sim
 
 ## Software Used
 - Python
-  - Numpy
-  - Keras
-  - OpenCV
+    - Numpy
+    - Keras
+    - OpenCV

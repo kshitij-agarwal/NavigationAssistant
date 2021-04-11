@@ -5,7 +5,7 @@ import time
 
 import cv2
 from sklearn.svm import SVC
-from sklearn.metrics import classification_report,accuracy_score
+from sklearn.metrics import classification_report, accuracy_score
 import pickle
 import pandas as pd
 import numpy as np
