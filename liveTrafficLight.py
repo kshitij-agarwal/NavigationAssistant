@@ -97,13 +97,21 @@ def candidate_extraction(img):
         # if check_size(bw, bh) or check_fill(combined_mask, bx, by, bw, bh) or check_aspect(bw, bh):
         #     print(check_size(bw, bh), " ", check_fill(combined_mask, bx, by, bw, bh), " ", check_aspect(bw, bh))
 
-        if check_size(bw, bh) and check_fill(combined_mask, bx, by, bw, bh) and check_aspect(bw, bh):
+        if (check_size(bw, bh)) and (check_fill(combined_mask, bx, by, bw, bh)) and (check_aspect(bw, bh)):
             candidates.append([nx, ny, nl])
         # cv2.imshow("rect", cv2.rectangle(img, (nx, ny), (nx + nl, ny + nl), (255, 0, 0), 2))
     # print(candidates)
 
     for bx, by, bl in candidates:
-        cv2.imshow("rect", cv2.rectangle(img, (bx, by), (bx + bl, by + bl), (0, 255, 0), 2))
+        cv2.imshow("rect",
+                   cv2.rectangle(
+                       img,
+                       (bx, by),
+                       (bx + bl, by + bl),
+                       (0, 255, 0),
+                       2
+                   )
+                   )
 
     return candidates
 
@@ -118,7 +126,10 @@ def candidate_selection(img, candidates, svm_model):
         y = candidates[i][1]
         l = candidates[i][2]
 
-        resized = cv2.resize(img[y:y + l, x:x + l], (20, 20), interpolation=cv2.INTER_AREA)
+        resized = cv2.resize(img[y:y + l, x:x + l],
+                             (20, 20),
+                             interpolation=cv2.INTER_AREA)
+
         b = resized.copy()
         # set green and red channels to 0
         b[:, :, 1] = 0
@@ -129,22 +140,53 @@ def candidate_selection(img, candidates, svm_model):
         r[:, :, 0] = 0
         r[:, :, 1] = 0
 
-        red_histogram_feature, red_img = hog(r, orientations=8, pixels_per_cell=(5, 5), cells_per_block=(2, 2),
-                                             block_norm='L2', visualize=True)
-        blue_histogram_feature, blue_img = hog(b, orientations=8, pixels_per_cell=(5, 5), cells_per_block=(2, 2),
-                                               block_norm='L1', visualize=True)
-        _, red_img2 = hog(cv2.resize(r, (40, 40), interpolation=cv2.INTER_AREA),
-                          orientations=9, pixels_per_cell=(4, 4), cells_per_block=(2, 2),
-                          block_norm='L1', visualize=True)
-        _, blue_img2 = hog(cv2.resize(b, (40, 40), interpolation=cv2.INTER_AREA), orientations=9,
-                           pixels_per_cell=(4, 4), cells_per_block=(2, 2),
-                           block_norm='L1', visualize=True)
+        red_histogram_feature, red_img = hog(r,
+                                             orientations=8,
+                                             pixels_per_cell=(5, 5),
+                                             cells_per_block=(2, 2),
+                                             block_norm='L2',
+                                             visualize=True)
 
-        hogs.append(np.hstack((exposure.rescale_intensity(red_img2, out_range=(0, 255)),
-                               exposure.rescale_intensity(blue_img2, out_range=(0, 255)))))
-        hogs2.append(np.hstack((exposure.rescale_intensity(red_img, out_range=(0, 255)),
-                                exposure.rescale_intensity(blue_img, out_range=(0, 255)))))
-        features.append(np.concatenate((red_histogram_feature, blue_histogram_feature), axis=None))
+        blue_histogram_feature, blue_img = hog(b,
+                                               orientations=8,
+                                               pixels_per_cell=(5, 5),
+                                               cells_per_block=(2, 2),
+                                               block_norm='L1',
+                                               visualize=True)
+
+        _, red_img2 = hog(cv2.resize(r, (40, 40), interpolation=cv2.INTER_AREA),
+                          orientations=9,
+                          pixels_per_cell=(4, 4),
+                          cells_per_block=(2, 2),
+                          block_norm='L1',
+                          visualize=True)
+
+        _, blue_img2 = hog(cv2.resize(b, (40, 40), interpolation=cv2.INTER_AREA),
+                           orientations=9,
+                           pixels_per_cell=(4, 4),
+                           cells_per_block=(2, 2),
+                           block_norm='L1',
+                           visualize=True)
+
+        hogs.append(
+            np.hstack(
+                (exposure.rescale_intensity(red_img2, out_range=(0, 255)),
+                 exposure.rescale_intensity(blue_img2, out_range=(0, 255))
+                 )
+            )
+        )
+        hogs2.append(
+            np.hstack(
+                (exposure.rescale_intensity(red_img, out_range=(0, 255)),
+                 exposure.rescale_intensity(blue_img, out_range=(0, 255))
+                 )
+            )
+        )
+
+        features.append(
+            np.concatenate((red_histogram_feature, blue_histogram_feature),
+                           axis=None)
+        )
 
     hog_features = np.array(features, np.float32)
 
@@ -155,7 +197,10 @@ def candidate_selection(img, candidates, svm_model):
         y = candidates[i][1]
         l = candidates[i][2]
 
-        resized = cv2.resize(img[y:y + l, x:x + l], (20, 20), interpolation=cv2.INTER_AREA)
+        resized = cv2.resize(img[y:y + l, x:x + l],
+                             (20, 20),
+                             interpolation=cv2.INTER_AREA
+                             )
 
         print([hog_features[i]])
 

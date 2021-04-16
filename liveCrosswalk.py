@@ -1,13 +1,13 @@
 import time
 
+import scipy.misc
+import statistics
+import glob
+from PIL import Image
 import numpy as np
 import cv2
 import math
-import scipy.misc
-import PIL.Image
-import statistics
 import timeit
-import glob
 from sklearn import linear_model, datasets
 
 IMAGE_HEIGHT = 720
@@ -80,7 +80,7 @@ def lineIntersect(m1, b1, m2, b2):
 
 
 # process a frame
-# noinspection PyShadowingNames,PySimplifyBooleanCheck
+# noinspection PyShadowingNames,PySimplifyBooleanCheck,PyRedundantParentheses
 def process(im):
     start = timeit.timeit()  # start timer
 
@@ -233,6 +233,8 @@ def process(im):
     return im, Dx, Dy
 
 
+# End of function process
+
 # initialization
 # cap = cv2.VideoCapture('inputVideo.mp4')  # load a video
 videoName = 'crosswalk'
@@ -241,8 +243,8 @@ cap = cv2.VideoCapture('data/' + videoName + '.mkv')
 # cap = cv2.VideoCapture('../data/noon/' + videoName + '.mkv')
 
 
-W = cap.get(3)  # get width
-H = cap.get(4)  # get height
+W = int(cap.get(3))  # get width
+H = int(cap.get(4))  # get height   #cap.get returns float value
 
 # Define a new resolution
 # ratio = H / W
@@ -262,6 +264,9 @@ DyAve = 0
 Dyold = 0
 i = 0
 state = ""
+
+fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+export_video = cv2.VideoWriter('export.mp4', fourcc, 1, (W, H))
 
 while (cap.isOpened()):
     ret, frame = cap.read()
@@ -298,7 +303,8 @@ while (cap.isOpened()):
         if (DyAve > 30) and (abs(DxAve) < 300):
             # check if the vanishing point and the next vanishing point aren't too far from each other
             if ((DxAve - Dxold) ** 2 + (DyAve - Dyold) ** 2) < 150 ** 2:  # distance 150 px max
-                cv2.line(img, (int(W / 2), int(H / 2)), (int(W / 2) + int(DxAve), int(H / 2) + int(DyAve)), (0, 0, 255), 7)
+                cv2.line(img, (int(W / 2), int(H / 2)), (int(W / 2) + int(DxAve), int(H / 2) + int(DyAve)), (0, 0, 255),
+                         7)
 
                 # walking directions
                 if abs(DxAve) < 80 and DyAve > 100 and abs(Dxold - DxAve) < 20:
@@ -325,6 +331,8 @@ while (cap.isOpened()):
             Dxold = DxAve
             Dyold = DyAve
 
+            export_video.write(processedFrame)
+
             img = cv2.imshow('Processed', processedFrame)
     except Exception:
         print('Failed to process frame', Exception)
@@ -338,6 +346,10 @@ while (cap.isOpened()):
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
+# End of while
+
+
 # out.release()
+export_video.release()
 cap.release()
 cv2.destroyAllWindows()
